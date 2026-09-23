@@ -1,0 +1,21 @@
+.DS_Store
+Thumbs.db
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Build
+dist/
+
+# Python
+venv/
+.env
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
+Desktop.ini
