@@ -1,4 +1,13 @@
 (function(){
+  // GitHub Pages serves this project below /Client-1/ rather than the domain root.
+  var projectBase = window.location.hostname === 'kakamikk.github.io' ? '/Client-1' : '';
+  document.querySelectorAll('a[href^="/"]').forEach(function(link){
+    var href = link.getAttribute('href');
+    if(href && href.indexOf(projectBase + '/') !== 0){
+      link.setAttribute('href', projectBase + href);
+    }
+  });
+
   // Sticky nav compact state
   var header = document.getElementById('siteHeader');
   function onScroll(){
