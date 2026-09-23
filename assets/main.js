@@ -15,7 +15,7 @@
   if(toggle && panel){
     toggle.addEventListener('click', function(){
       var open = panel.classList.toggle('open');
-      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-expanded', open);
     });
     panel.querySelectorAll('a').forEach(function(a){
       a.addEventListener('click', function(){ panel.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); });
@@ -120,6 +120,104 @@
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
   }
 
+  // Mega menu (click-to-toggle for touch/keyboard; CSS handles hover on desktop)
+  var navItems = document.querySelectorAll('.nav-item.has-mega');
+  navItems.forEach(function(item){
+    var trigger = item.querySelector('.nav-mega-trigger');
+    if(!trigger) return;
+    trigger.addEventListener('click', function(e){
+      e.stopPropagation();
+      var isOpen = item.classList.contains('open');
+      navItems.forEach(function(i){ i.classList.remove('open'); i.querySelector('.nav-mega-trigger').setAttribute('aria-expanded','false'); });
+      if(!isOpen){ item.classList.add('open'); trigger.setAttribute('aria-expanded','true'); }
+    });
+  });
+  document.addEventListener('click', function(){
+    navItems.forEach(function(i){ i.classList.remove('open'); i.querySelector('.nav-mega-trigger').setAttribute('aria-expanded','false'); });
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
+      navItems.forEach(function(i){ i.classList.remove('open'); i.querySelector('.nav-mega-trigger').setAttribute('aria-expanded','false'); });
+    }
+  });
+
+  // Article modal (Artikel page)
+  var articleModal = document.getElementById('articleModal');
+  if(articleModal){
+    var articleClose = document.getElementById('articleModalClose');
+    var articles = {
+      'kitchen-material': {
+        cat:'Furnitur & Interior', title:'5 Tips Memilih Material Kitchen Set agar Awet Bertahun-tahun',
+        body:[
+          'Kitchen set adalah salah satu investasi furnitur yang paling sering dipakai setiap hari, sehingga pemilihan material menjadi penentu utama usia pakainya.',
+          'Pertama, perhatikan ketahanan terhadap air. Area sekitar sink dan kompor paling rentan lembap, jadi multiplek atau blockboard umumnya lebih tahan lama dibanding partikel board biasa.',
+          'Kedua, pilih finishing HPL dengan lapisan yang rata dan edge banding yang rapi, karena celah pada tepi panel adalah titik masuknya kelembapan yang mempercepat kerusakan.',
+          'Ketiga, pertimbangkan jenis engsel dan rel laci. Engsel soft-close dan rel ball-bearing memang sedikit lebih mahal, namun jauh lebih tahan terhadap pemakaian harian.',
+          'Keempat, sesuaikan warna dan tekstur dengan pencahayaan dapur Anda — warna gelap menyerap lebih banyak panas dari peralatan masak, sementara warna terang lebih mudah menunjukkan noda.',
+          'Terakhir, pastikan pengukuran dilakukan langsung di lokasi sebelum produksi dimulai, karena kitchen set yang presisi akan jauh lebih tahan lama dibanding yang dipaksakan menyesuaikan ruang.'
+        ]
+      },
+      'sofa-restorasi': {
+        cat:'Sofa', title:'Kapan Waktu yang Tepat untuk Restorasi Sofa, Bukan Beli Baru?',
+        body:[
+          'Tidak semua sofa yang terlihat usang harus diganti. Banyak sofa dengan rangka kayu solid justru lebih kokoh dibanding sofa baru berbahan rangka ringan, dan hanya perlu dipulihkan bagian luarnya.',
+          'Periksa rangka terlebih dahulu. Jika sofa masih kokoh saat digoyangkan dan tidak berderit, kemungkinan besar rangkanya masih layak dipertahankan dan hanya busa serta kainnya yang perlu diganti.',
+          'Perhatikan juga busa dudukan. Busa yang sudah kempes dan tidak kembali ke bentuk semula setelah diduduki adalah tanda paling umum bahwa sofa membutuhkan penggantian busa, bukan penggantian sofa secara keseluruhan.',
+          'Dari sisi biaya, restorasi sofa umumnya jauh lebih hemat dibanding membeli sofa custom baru dengan ukuran dan kualitas yang setara, terutama untuk sofa berukuran besar.',
+          'Restorasi juga menjadi pilihan yang lebih berkelanjutan, karena mengurangi limbah furnitur sekaligus mempertahankan sofa yang mungkin punya nilai kenangan tersendiri bagi keluarga Anda.'
+        ]
+      },
+      'wardrobe-vs-builtin': {
+        cat:'Furnitur & Interior', title:'Wardrobe Custom vs Built-in: Mana yang Cocok untuk Kamar Anda?',
+        body:[
+          'Wardrobe custom biasanya dibuat sebagai unit berdiri sendiri dengan ukuran yang disesuaikan, namun tetap bisa dipindahkan jika suatu saat diperlukan.',
+          'Wardrobe built-in menyatu langsung dengan struktur dinding dan langit-langit kamar, sehingga tidak ada celah kosong di atas atau di samping unit — cocok untuk kamar dengan bentuk tidak simetris.',
+          'Jika Anda sering berpindah tempat tinggal atau ingin fleksibilitas di masa depan, wardrobe custom berdiri sendiri lebih masuk akal karena dapat dibawa pindah.',
+          'Sebaliknya, jika kamar Anda adalah rumah tetap dan Anda ingin memaksimalkan setiap sudut ruang, wardrobe built-in umumnya memberikan kapasitas penyimpanan yang lebih besar.',
+          'Dari sisi tampilan, wardrobe built-in cenderung terlihat lebih menyatu dengan interior karena tidak ada celah atau bayangan di sekitarnya, sementara wardrobe custom berdiri sendiri lebih mudah diberi sentuhan dekoratif tersendiri.',
+          'Kedua pilihan sama-sama bisa menggunakan material dan finishing yang sama — keputusan akhirnya lebih bergantung pada kebutuhan jangka panjang Anda terhadap ruang tersebut.'
+        ]
+      },
+      'mengenal-hpl': {
+        cat:'Material', title:'Mengenal HPL: Kelebihan dan Cara Merawatnya untuk Furnitur Rumah',
+        body:[
+          'HPL (High Pressure Laminate) adalah lapisan finishing yang terbuat dari beberapa lembar kertas kraft yang direkatkan dengan resin bertekanan tinggi, lalu dilapisi motif dekoratif di permukaannya.',
+          'Kelebihan utama HPL dibanding cat duco adalah daya tahannya terhadap goresan dan benturan ringan, menjadikannya pilihan populer untuk furnitur yang sering digunakan seperti kitchen set dan meja kerja.',
+          'HPL juga tersedia dalam berbagai motif, mulai dari woodgrain yang menyerupai serat kayu asli, warna solid, hingga motif batu dan marmer — sehingga fleksibel mengikuti gaya interior yang diinginkan.',
+          'Untuk merawatnya, cukup lap permukaan HPL dengan kain lembap dan sedikit sabun cair, lalu keringkan dengan kain kering. Hindari bahan pembersih abrasif atau berbahan asam keras yang dapat merusak lapisan permukaannya.',
+          'Perhatikan juga bagian tepi (edge banding). Karena bagian ini paling sering terkena benturan, pastikan proses pemasangan edge banding dilakukan dengan rapi agar tidak mudah terkelupas seiring waktu.'
+        ]
+      },
+      'ukur-ruang': {
+        cat:'Panduan', title:'Panduan Mengukur Ruang Sebelum Pesan Furnitur Custom',
+        body:[
+          'Pengukuran yang akurat adalah fondasi dari furnitur custom yang benar-benar pas dengan ruang Anda. Kesalahan kecil dalam pengukuran bisa berdampak besar pada hasil akhir produksi.',
+          'Selalu ukur lebar, tinggi, dan kedalaman ruang di tiga titik berbeda (atas, tengah, bawah), karena dinding dan lantai rumah jarang benar-benar rata sempurna.',
+          'Perhatikan posisi stop kontak, saklar, pipa, dan ventilasi di area yang akan dipasangi furnitur, agar desain dapat menyesuaikan tanpa menutupi akses penting tersebut.',
+          'Jangan lupa mengukur jalur masuk furnitur — pintu, tangga, dan lorong — terutama untuk furnitur berukuran besar seperti wardrobe atau sofa L-shape, agar proses pengiriman berjalan lancar.',
+          'Meski Anda bisa melakukan pengukuran awal sendiri, kunjungan survei langsung oleh tim tetap penting untuk memastikan akurasi sebelum desain dan produksi dimulai.'
+        ]
+      }
+    };
+    document.querySelectorAll('.article-card').forEach(function(card){
+      card.addEventListener('click', function(){
+        var key = card.getAttribute('data-article');
+        var a = articles[key];
+        if(!a) return;
+        document.getElementById('articleModalCat').textContent = a.cat;
+        document.getElementById('articleModalTitle').textContent = a.title;
+        var bodyEl = document.getElementById('articleModalBody');
+        bodyEl.innerHTML = a.body.map(function(p){ return '<p>' + p + '</p>'; }).join('');
+        articleModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    function closeArticle(){ articleModal.classList.remove('open'); document.body.style.overflow=''; }
+    if(articleClose) articleClose.addEventListener('click', closeArticle);
+    articleModal.addEventListener('click', function(e){ if(e.target === articleModal) closeArticle(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeArticle(); });
+  }
+
   // Portfolio filter (Portfolio page)
   var filterBtns = document.querySelectorAll('.filter-btn');
   if(filterBtns.length){
@@ -136,20 +234,4 @@
       });
     });
   }
-
-  // Accessibility + UX: mark navbar link active based on current path
-  (function markActiveNav(){
-    try{
-      var current = location.pathname.replace(/\/+$/, '') || '/';
-      document.querySelectorAll('nav.links a, .mobile-panel a').forEach(function(a){
-        var href = a.getAttribute('href') || '';
-        // resolve relative/absolute hrefs safely
-        try{
-          var url = new URL(href, location.origin);
-          var path = url.pathname.replace(/\/+$/, '') || '/';
-          if(path === current){ a.classList.add('active'); }
-        }catch(e){}
-      });
-    }catch(e){}
-  })();
 })();
