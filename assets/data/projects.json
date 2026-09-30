@@ -1,0 +1,52 @@
+[
+  {
+    "slug":"kitchen","title":"Dapur Minimalis Modern","brand":"Bantenese Furniture","category":"furniture",
+    "location":"BSD City, Tangerang","services":"Desain, Produksi, Pemasangan","materials":"Multiplek, HPL Woodgrain","style":"Modern Minimalis",
+    "image":"https://images.unsplash.com/photo-1588796460718-f457ad1e1a1f?w=1200&q=80&auto=format&fit=crop",
+    "challenge":"Klien membutuhkan dapur yang ringkas namun tetap memaksimalkan penyimpanan tanpa terasa sempit.",
+    "solution":"Kami merancang tata letak mengikuti titik pipa dan listrik yang sudah ada, menggunakan kabinet berprofil ramping dan finishing HPL woodgrain.",
+    "result":"Dapur yang terasa jauh lebih luas dari ukuran sebenarnya, dengan penyimpanan yang direncanakan mengikuti kebiasaan memasak keluarga."
+  },
+  {
+    "slug":"wardrobe","title":"Lemari Custom","brand":"Bantenese Furniture","category":"furniture",
+    "location":"Serpong, Tangerang Selatan","services":"Desain, Produksi, Pemasangan","materials":"Blockboard, HPL Solid","style":"Kontemporer",
+    "image":"https://images.unsplash.com/photo-1750779940596-203c5261b5dd?w=1200&q=80&auto=format&fit=crop",
+    "challenge":"Dinding kamar tidur yang sempit membutuhkan lemari dengan penyimpanan penuh tanpa terasa membebani ruang.",
+    "solution":"Lemari sliding-door setinggi penuh dibangun sesuai ukuran dinding sebenarnya, tata letak internal mengikuti kebutuhan klien.",
+    "result":"Lemari built-in yang menyatu dengan arsitektur ruangan, bukan sekadar furnitur tambahan."
+  },
+  {
+    "slug":"sofa-lshape","title":"Sofa L-Shape Kontemporer","brand":"Sofapedia","category":"sofa",
+    "location":"Alam Sutera, Tangerang","services":"Desain, Upholstery, Pengiriman","materials":"Kain Premium, Busa Densitas Tinggi","style":"Kontemporer",
+    "image":"https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=1200&q=80&auto=format&fit=crop",
+    "challenge":"Klien menginginkan sofa L-Shape besar untuk ruang tamu terbuka dengan jalur sirkulasi yang tetap lega.",
+    "solution":"Rangka dibangun sesuai dimensi custom, diisi busa densitas tinggi, dilapisi kain premium yang tahan lama.",
+    "result":"Sofa yang menjadi pusat ruang tamu tanpa terasa memenuhi ruangan, kokoh untuk pemakaian harian bertahun-tahun."
+  },
+  {
+    "slug":"sofa-restoration","title":"Restorasi Sofa","brand":"Sofapedia","category":"restorasi",
+    "location":"Bintaro, Tangerang Selatan","services":"Reupholstery, Penggantian Busa, Perbaikan","materials":"Kain Baru, Busa Densitas Tinggi","style":"Restorasi",
+    "image_before":"https://images.unsplash.com/photo-1619759247142-b457e9e6b634?w=1200&q=80&auto=format&fit=crop",
+    "image_after":"https://images.unsplash.com/photo-1639654778340-92bec4756b05?w=1200&q=80&auto=format&fit=crop",
+    "image":"https://images.unsplash.com/photo-1639654778340-92bec4756b05?w=1200&q=80&auto=format&fit=crop",
+    "challenge":"Sofa tiga dudukan mengalami sambungan rangka lepas, busa kempes, dan kain usang setelah bertahun-tahun dipakai.",
+    "solution":"Kami memperbaiki rangka internal, mengganti busa dengan kepadatan lebih tinggi, dan reupholstery penuh dengan kain baru.",
+    "result":"Sofa yang sama yang telah menemani keluarga ini bertahun-tahun, kini kokoh kembali dan siap dipakai untuk tahun-tahun berikutnya."
+  },
+  {
+    "slug":"commercial","title":"Furnitur Komersial","brand":"Bantenese Furniture","category":"furniture",
+    "location":"Gading Serpong, Tangerang","services":"Desain, Produksi, Pemasangan","materials":"Multiplek, HPL, Kayu Solid","style":"Modern Korporat",
+    "image":"https://images.unsplash.com/photo-1654406632448-c7c868f57fed?w=1200&q=80&auto=format&fit=crop",
+    "challenge":"Kantor yang berkembang membutuhkan furnitur konsisten dan tahan lama di beberapa ruangan dengan tenggat ketat.",
+    "solution":"Kami menstandarkan desain modular untuk meja, penyimpanan, dan furnitur resepsionis agar produksi lebih efisien.",
+    "result":"Furnitur kantor yang seragam dan tahan lama, terkirim dan terpasang sesuai jadwal proyek klien."
+  },
+  {
+    "slug":"lounge","title":"Sofa Lounge Custom","brand":"Sofapedia","category":"sofa",
+    "location":"BSD City, Tangerang","services":"Desain, Upholstery, Pengiriman","materials":"Kulit Asli, Busa Densitas Tinggi","style":"Minimalis Lounge",
+    "image":"https://images.unsplash.com/photo-1619759247142-b457e9e6b634?w=1200&q=80&auto=format&fit=crop",
+    "challenge":"Klien menginginkan satu kursi lounge dengan profil rendah dan arsitektural, dilapisi kulit asli.",
+    "solution":"Kami mengembangkan rangka rendah dengan sandaran melengkung lembut, dilapisi kulit asli di atas busa densitas tinggi.",
+    "result":"Sebuah karya yang tenang dan arsitektural, terasa seperti karya seni sekaligus tempat duduk."
+  }
+]

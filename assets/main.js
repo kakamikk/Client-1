@@ -1,13 +1,4 @@
 (function(){
-  // GitHub Pages serves this project below /Client-1/ rather than the domain root.
-  var projectBase = window.location.hostname === 'kakamikk.github.io' ? '/Client-1' : '';
-  document.querySelectorAll('a[href^="/"]').forEach(function(link){
-    var href = link.getAttribute('href');
-    if(href && href.indexOf(projectBase + '/') !== 0){
-      link.setAttribute('href', projectBase + href);
-    }
-  });
-
   // Sticky nav compact state
   var header = document.getElementById('siteHeader');
   function onScroll(){
@@ -24,10 +15,11 @@
   if(toggle && panel){
     toggle.addEventListener('click', function(){
       var open = panel.classList.toggle('open');
+      toggle.classList.toggle('open', open);
       toggle.setAttribute('aria-expanded', open);
     });
     panel.querySelectorAll('a').forEach(function(a){
-      a.addEventListener('click', function(){ panel.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); });
+      a.addEventListener('click', function(){ panel.classList.remove('open'); toggle.classList.remove('open'); toggle.setAttribute('aria-expanded','false'); });
     });
   }
 
@@ -44,7 +36,49 @@
     revealEls.forEach(function(el){ el.classList.add('in'); });
   }
 
-  // Before / After slider (Sofapedia page)
+  /**
+   * WhatsApp click tracking hook.
+   * TODO(client): wire in Google Analytics / Meta Pixel here, e.g.:
+   *   gtag('event', 'whatsapp_click', { source: source });
+   *   fbq('trackCustom', 'WhatsAppClick', { source: source });
+   * Every WA link/button in the templates carries data-wa-track="<source>"
+   * (floating-button, nav-cta, hero, process-cta, portfolio-cta, contact-page, ...)
+   * so you can see exactly which entry point drove the click.
+   */
+  function trackWhatsAppClick(source){
+    // eslint-disable-next-line no-console
+    console.log('[wa-track]', source); // TODO(client): replace/extend with real analytics call
+  }
+  document.addEventListener('click', function(e){
+    var el = e.target.closest('[data-wa-track]');
+    if(el){ trackWhatsAppClick(el.getAttribute('data-wa-track')); }
+  });
+
+  // Send the contact form details to WhatsApp; this static site has no form backend.
+  var projectForm = document.getElementById('projectForm');
+  if(projectForm){
+    projectForm.addEventListener('submit', function(e){
+      e.preventDefault();
+      var fields = [
+        ['Nama', 'f-name'],
+        ['WhatsApp', 'f-wa'],
+        ['Email', 'f-email'],
+        ['Jenis proyek', 'f-type'],
+        ['Lokasi', 'f-loc'],
+        ['Estimasi ukuran', 'f-size'],
+        ['Kisaran anggaran', 'f-budget'],
+        ['Deskripsi', 'f-desc']
+      ];
+      var message = ['Halo Bantenese Group, saya ingin mengajukan konsultasi proyek.'];
+      fields.forEach(function(field){
+        var value = document.getElementById(field[1]).value.trim();
+        if(value) message.push(field[0] + ': ' + value);
+      });
+      window.open('https://wa.me/6282215617080?text=' + encodeURIComponent(message.join('\n')), '_blank', 'noopener,noreferrer');
+    });
+  }
+
+  // Before / After slider (used on Sofapedia-style sections)
   var slider = document.getElementById('baSlider');
   if(slider){
     var after = document.getElementById('baAfter');
@@ -65,58 +99,49 @@
     window.addEventListener('touchend', function(){ dragging = false; });
   }
 
-  // Portfolio project modal
+  /**
+   * Portfolio project modal — data-driven from window.BANTENESE_PROJECTS
+   * (injected server-side from assets/data/projects.json at build time, so
+   * the grid cards and the modal always read the SAME single source of
+   * data — this is what fixes the empty Tantangan/Solusi/Material/Hasil
+   * Akhir bug from the previous version).
+   * Any field missing from a project's data is simply omitted from the
+   * modal (heading + paragraph both hidden) instead of rendering empty.
+   */
   var modal = document.getElementById('projectModal');
-  if(modal){
+  if(modal && window.BANTENESE_PROJECTS){
+    var byslug = {};
+    window.BANTENESE_PROJECTS.forEach(function(p){ byslug[p.slug] = p; });
     var modalClose = document.getElementById('modalClose');
-    var projectData = {
-      'kitchen': {title:'Dapur Minimalis Modern', cat:'Bantenese Furniture', loc:'BSD City, Tangerang', services:'Desain, Produksi, Pemasangan', materials:'Multiplek, HPL Woodgrain', style:'Modern Minimalis',
-        challenge:'Klien membutuhkan dapur yang ringkas namun tetap memaksimalkan penyimpanan tanpa terasa sempit, sekaligus menyesuaikan karakter hangat dan bersih dari rumah tersebut.',
-        solution:'Kami merancang tata letak mengikuti titik pipa dan listrik yang sudah ada, menggunakan kabinet berprofil ramping dan finishing HPL woodgrain agar ruang tetap terasa lapang dan menyatu.',
-        materialsText:'Rangka kabinet multiplek dengan pintu HPL woodgrain, engsel soft-close, dan countertop solid surface.',
-        result:'Dapur yang terasa jauh lebih luas dari ukuran sebenarnya, dengan setiap sentimeter ruang penyimpanan direncanakan mengikuti cara keluarga ini benar-benar memasak.'},
-      'wardrobe': {title:'Lemari Custom', cat:'Bantenese Furniture', loc:'Serpong, Tangerang Selatan', services:'Desain, Produksi, Pemasangan', materials:'Blockboard, HPL Solid', style:'Kontemporer',
-        challenge:'Dinding kamar tidur yang sempit membutuhkan lemari dengan penyimpanan penuh dari lantai ke langit-langit tanpa terasa membebani ruang.',
-        solution:'Lemari sliding-door setinggi penuh dibangun sesuai ukuran dinding yang sebenarnya, dengan tata letak internal direncanakan mengikuti jenis pakaian dan barang milik klien.',
-        materialsText:'Struktur blockboard dengan pintu HPL solid dan mekanisme sliding soft-close.',
-        result:'Lemari built-in yang menyatu dengan arsitektur ruangan, bukan sekadar furnitur tambahan.'},
-      'sofa-lshape': {title:'Sofa L-Shape Kontemporer', cat:'Sofapedia', loc:'Alam Sutera, Tangerang', services:'Desain, Upholstery, Pengiriman', materials:'Kain Premium, Busa Densitas Tinggi', style:'Kontemporer',
-        challenge:'Klien menginginkan sofa L-Shape besar untuk ruang tamu terbuka, dengan ukuran yang tepat agar jalur sirkulasi tetap lega.',
-        solution:'Kami membangun rangka sesuai dimensi custom dan mengisinya dengan busa densitas tinggi agar tetap nyaman dalam jangka panjang, dilapisi kain premium yang tahan lama.',
-        materialsText:'Rangka kayu solid, dudukan busa densitas tinggi, kain tenun premium.',
-        result:'Sofa yang menjadi pusat ruang tamu tanpa terasa memenuhi ruangan, dibangun untuk tetap kokoh selama bertahun-tahun pemakaian harian.'},
-      'sofa-restoration': {title:'Restorasi Sofa', cat:'Sofapedia', loc:'Bintaro, Tangerang Selatan', services:'Reupholstery, Penggantian Busa, Perbaikan', materials:'Kain Baru, Busa Densitas Tinggi', style:'Restorasi',
-        challenge:'Sofa tiga dudukan yang sudah lama dipakai mengalami sambungan rangka yang lepas, busa yang kempes, dan kain yang usang setelah bertahun-tahun digunakan.',
-        solution:'Kami memperbaiki rangka internal, mengganti busa dengan kepadatan yang lebih tinggi, dan melakukan reupholstery penuh dengan kain baru pilihan klien.',
-        materialsText:'Rangka kayu keras yang diperbaiki, busa densitas tinggi baru, kain upholstery pengganti.',
-        result:'Sofa yang sama yang telah menemani keluarga ini bertahun-tahun, kini kokoh kembali dan siap dipakai untuk tahun-tahun berikutnya.'},
-      'commercial': {title:'Furnitur Komersial', cat:'Bantenese Furniture', loc:'Gading Serpong, Tangerang', services:'Desain, Produksi, Pemasangan', materials:'Multiplek, HPL, Kayu Solid', style:'Modern Korporat',
-        challenge:'Kantor yang terus berkembang membutuhkan furnitur yang konsisten dan tahan lama di beberapa ruangan sekaligus, dengan tenggat waktu yang ketat.',
-        solution:'Kami menstandarkan desain modular untuk meja, penyimpanan, dan furnitur resepsionis, sehingga produksi lebih efisien dan pemasangan di lokasi dapat terkoordinasi dengan baik.',
-        materialsText:'Rangka kabinet multiplek, finishing HPL kelas komersial, detail kayu solid pada area resepsionis.',
-        result:'Furnitur kantor yang seragam dan tahan lama, terkirim dan terpasang sesuai jadwal proyek klien.'},
-      'lounge': {title:'Sofa Lounge Custom', cat:'Sofapedia', loc:'BSD City, Tangerang', services:'Desain, Upholstery, Pengiriman', materials:'Kulit Asli, Busa Densitas Tinggi', style:'Minimalis Lounge',
-        challenge:'Klien menginginkan satu kursi lounge dengan profil rendah dan arsitektural, dilapisi kulit asli sebagai focal point ruangan.',
-        solution:'Kami mengembangkan rangka rendah dengan sandaran melengkung lembut, dilapisi kulit asli di atas busa densitas tinggi untuk dudukan yang kokoh dan tahan lama.',
-        materialsText:'Rangka kayu solid, busa densitas tinggi, upholstery kulit asli.',
-        result:'Sebuah karya yang tenang dan arsitektural, terasa seperti karya seni sekaligus tempat duduk.'}
-    };
+
+    function setField(id, value){
+      var el = document.getElementById(id);
+      if(!el) return;
+      var wrap = el.closest('.modal-field');
+      if(value){
+        el.textContent = value;
+        if(wrap) wrap.style.display = '';
+      } else if(wrap){
+        wrap.style.display = 'none';
+      }
+    }
+
     document.querySelectorAll('.project-card').forEach(function(card){
       card.addEventListener('click', function(){
-        var key = card.getAttribute('data-project');
-        var d = projectData[key];
-        if(!d) return;
-        document.getElementById('modalTitle').textContent = d.title;
-        document.getElementById('modalCat').textContent = d.cat;
-        document.getElementById('modalCat2').textContent = d.cat;
-        document.getElementById('modalLoc').textContent = d.loc;
-        document.getElementById('modalServices').textContent = d.services;
-        document.getElementById('modalMaterials').textContent = d.materials;
-        document.getElementById('modalStyle').textContent = d.style;
-        document.getElementById('modalChallenge').textContent = d.challenge;
-        document.getElementById('modalSolution').textContent = d.solution;
-        document.getElementById('modalMaterialsText').textContent = d.materialsText;
-        document.getElementById('modalResult').textContent = d.result;
+        var p = byslug[card.getAttribute('data-project')];
+        if(!p) return;
+        document.getElementById('modalCat').textContent = p.brand || '';
+        document.getElementById('modalTitle').textContent = p.title || '';
+        setField('modalLoc', p.location);
+        setField('modalCat2', p.brand);
+        setField('modalServices', p.services);
+        setField('modalMaterials', p.materials);
+        setField('modalStyle', p.style);
+        setField('modalChallenge', p.challenge);
+        setField('modalSolution', p.solution);
+        setField('modalResult', p.result);
+        var heroEl = document.getElementById('modalHero');
+        if(heroEl){ heroEl.innerHTML = p.image ? '<img src="'+p.image+'" alt="'+p.title+'" loading="lazy">' : ''; }
         modal.classList.add('open');
         document.body.style.overflow = 'hidden';
       });
@@ -129,105 +154,7 @@
     document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeModal(); });
   }
 
-  // Mega menu (click-to-toggle for touch/keyboard; CSS handles hover on desktop)
-  var navItems = document.querySelectorAll('.nav-item.has-mega');
-  navItems.forEach(function(item){
-    var trigger = item.querySelector('.nav-mega-trigger');
-    if(!trigger) return;
-    trigger.addEventListener('click', function(e){
-      e.stopPropagation();
-      var isOpen = item.classList.contains('open');
-      navItems.forEach(function(i){ i.classList.remove('open'); i.querySelector('.nav-mega-trigger').setAttribute('aria-expanded','false'); });
-      if(!isOpen){ item.classList.add('open'); trigger.setAttribute('aria-expanded','true'); }
-    });
-  });
-  document.addEventListener('click', function(){
-    navItems.forEach(function(i){ i.classList.remove('open'); i.querySelector('.nav-mega-trigger').setAttribute('aria-expanded','false'); });
-  });
-  document.addEventListener('keydown', function(e){
-    if(e.key === 'Escape'){
-      navItems.forEach(function(i){ i.classList.remove('open'); i.querySelector('.nav-mega-trigger').setAttribute('aria-expanded','false'); });
-    }
-  });
-
-  // Article modal (Artikel page)
-  var articleModal = document.getElementById('articleModal');
-  if(articleModal){
-    var articleClose = document.getElementById('articleModalClose');
-    var articles = {
-      'kitchen-material': {
-        cat:'Furnitur & Interior', title:'5 Tips Memilih Material Kitchen Set agar Awet Bertahun-tahun',
-        body:[
-          'Kitchen set adalah salah satu investasi furnitur yang paling sering dipakai setiap hari, sehingga pemilihan material menjadi penentu utama usia pakainya.',
-          'Pertama, perhatikan ketahanan terhadap air. Area sekitar sink dan kompor paling rentan lembap, jadi multiplek atau blockboard umumnya lebih tahan lama dibanding partikel board biasa.',
-          'Kedua, pilih finishing HPL dengan lapisan yang rata dan edge banding yang rapi, karena celah pada tepi panel adalah titik masuknya kelembapan yang mempercepat kerusakan.',
-          'Ketiga, pertimbangkan jenis engsel dan rel laci. Engsel soft-close dan rel ball-bearing memang sedikit lebih mahal, namun jauh lebih tahan terhadap pemakaian harian.',
-          'Keempat, sesuaikan warna dan tekstur dengan pencahayaan dapur Anda — warna gelap menyerap lebih banyak panas dari peralatan masak, sementara warna terang lebih mudah menunjukkan noda.',
-          'Terakhir, pastikan pengukuran dilakukan langsung di lokasi sebelum produksi dimulai, karena kitchen set yang presisi akan jauh lebih tahan lama dibanding yang dipaksakan menyesuaikan ruang.'
-        ]
-      },
-      'sofa-restorasi': {
-        cat:'Sofa', title:'Kapan Waktu yang Tepat untuk Restorasi Sofa, Bukan Beli Baru?',
-        body:[
-          'Tidak semua sofa yang terlihat usang harus diganti. Banyak sofa dengan rangka kayu solid justru lebih kokoh dibanding sofa baru berbahan rangka ringan, dan hanya perlu dipulihkan bagian luarnya.',
-          'Periksa rangka terlebih dahulu. Jika sofa masih kokoh saat digoyangkan dan tidak berderit, kemungkinan besar rangkanya masih layak dipertahankan dan hanya busa serta kainnya yang perlu diganti.',
-          'Perhatikan juga busa dudukan. Busa yang sudah kempes dan tidak kembali ke bentuk semula setelah diduduki adalah tanda paling umum bahwa sofa membutuhkan penggantian busa, bukan penggantian sofa secara keseluruhan.',
-          'Dari sisi biaya, restorasi sofa umumnya jauh lebih hemat dibanding membeli sofa custom baru dengan ukuran dan kualitas yang setara, terutama untuk sofa berukuran besar.',
-          'Restorasi juga menjadi pilihan yang lebih berkelanjutan, karena mengurangi limbah furnitur sekaligus mempertahankan sofa yang mungkin punya nilai kenangan tersendiri bagi keluarga Anda.'
-        ]
-      },
-      'wardrobe-vs-builtin': {
-        cat:'Furnitur & Interior', title:'Wardrobe Custom vs Built-in: Mana yang Cocok untuk Kamar Anda?',
-        body:[
-          'Wardrobe custom biasanya dibuat sebagai unit berdiri sendiri dengan ukuran yang disesuaikan, namun tetap bisa dipindahkan jika suatu saat diperlukan.',
-          'Wardrobe built-in menyatu langsung dengan struktur dinding dan langit-langit kamar, sehingga tidak ada celah kosong di atas atau di samping unit — cocok untuk kamar dengan bentuk tidak simetris.',
-          'Jika Anda sering berpindah tempat tinggal atau ingin fleksibilitas di masa depan, wardrobe custom berdiri sendiri lebih masuk akal karena dapat dibawa pindah.',
-          'Sebaliknya, jika kamar Anda adalah rumah tetap dan Anda ingin memaksimalkan setiap sudut ruang, wardrobe built-in umumnya memberikan kapasitas penyimpanan yang lebih besar.',
-          'Dari sisi tampilan, wardrobe built-in cenderung terlihat lebih menyatu dengan interior karena tidak ada celah atau bayangan di sekitarnya, sementara wardrobe custom berdiri sendiri lebih mudah diberi sentuhan dekoratif tersendiri.',
-          'Kedua pilihan sama-sama bisa menggunakan material dan finishing yang sama — keputusan akhirnya lebih bergantung pada kebutuhan jangka panjang Anda terhadap ruang tersebut.'
-        ]
-      },
-      'mengenal-hpl': {
-        cat:'Material', title:'Mengenal HPL: Kelebihan dan Cara Merawatnya untuk Furnitur Rumah',
-        body:[
-          'HPL (High Pressure Laminate) adalah lapisan finishing yang terbuat dari beberapa lembar kertas kraft yang direkatkan dengan resin bertekanan tinggi, lalu dilapisi motif dekoratif di permukaannya.',
-          'Kelebihan utama HPL dibanding cat duco adalah daya tahannya terhadap goresan dan benturan ringan, menjadikannya pilihan populer untuk furnitur yang sering digunakan seperti kitchen set dan meja kerja.',
-          'HPL juga tersedia dalam berbagai motif, mulai dari woodgrain yang menyerupai serat kayu asli, warna solid, hingga motif batu dan marmer — sehingga fleksibel mengikuti gaya interior yang diinginkan.',
-          'Untuk merawatnya, cukup lap permukaan HPL dengan kain lembap dan sedikit sabun cair, lalu keringkan dengan kain kering. Hindari bahan pembersih abrasif atau berbahan asam keras yang dapat merusak lapisan permukaannya.',
-          'Perhatikan juga bagian tepi (edge banding). Karena bagian ini paling sering terkena benturan, pastikan proses pemasangan edge banding dilakukan dengan rapi agar tidak mudah terkelupas seiring waktu.'
-        ]
-      },
-      'ukur-ruang': {
-        cat:'Panduan', title:'Panduan Mengukur Ruang Sebelum Pesan Furnitur Custom',
-        body:[
-          'Pengukuran yang akurat adalah fondasi dari furnitur custom yang benar-benar pas dengan ruang Anda. Kesalahan kecil dalam pengukuran bisa berdampak besar pada hasil akhir produksi.',
-          'Selalu ukur lebar, tinggi, dan kedalaman ruang di tiga titik berbeda (atas, tengah, bawah), karena dinding dan lantai rumah jarang benar-benar rata sempurna.',
-          'Perhatikan posisi stop kontak, saklar, pipa, dan ventilasi di area yang akan dipasangi furnitur, agar desain dapat menyesuaikan tanpa menutupi akses penting tersebut.',
-          'Jangan lupa mengukur jalur masuk furnitur — pintu, tangga, dan lorong — terutama untuk furnitur berukuran besar seperti wardrobe atau sofa L-shape, agar proses pengiriman berjalan lancar.',
-          'Meski Anda bisa melakukan pengukuran awal sendiri, kunjungan survei langsung oleh tim tetap penting untuk memastikan akurasi sebelum desain dan produksi dimulai.'
-        ]
-      }
-    };
-    document.querySelectorAll('.article-card').forEach(function(card){
-      card.addEventListener('click', function(){
-        var key = card.getAttribute('data-article');
-        var a = articles[key];
-        if(!a) return;
-        document.getElementById('articleModalCat').textContent = a.cat;
-        document.getElementById('articleModalTitle').textContent = a.title;
-        var bodyEl = document.getElementById('articleModalBody');
-        bodyEl.innerHTML = a.body.map(function(p){ return '<p>' + p + '</p>'; }).join('');
-        articleModal.classList.add('open');
-        document.body.style.overflow = 'hidden';
-      });
-    });
-    function closeArticle(){ articleModal.classList.remove('open'); document.body.style.overflow=''; }
-    if(articleClose) articleClose.addEventListener('click', closeArticle);
-    articleModal.addEventListener('click', function(e){ if(e.target === articleModal) closeArticle(); });
-    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeArticle(); });
-  }
-
-  // Portfolio filter (Portfolio page)
+  // Portfolio filter (Layanan page)
   var filterBtns = document.querySelectorAll('.filter-btn');
   if(filterBtns.length){
     var cards = document.querySelectorAll('.portfolio-grid .project-card');
@@ -243,4 +170,44 @@
       });
     });
   }
+
+  // Article modal (Artikel page)
+  var articleModal = document.getElementById('articleModal');
+  if(articleModal && window.BANTENESE_ARTICLES){
+    var articleClose = document.getElementById('articleModalClose');
+    var byKey = {};
+    window.BANTENESE_ARTICLES.forEach(function(a){ byKey[a.key] = a; });
+    document.querySelectorAll('.article-card').forEach(function(card){
+      card.addEventListener('click', function(){
+        var a = byKey[card.getAttribute('data-article')];
+        if(!a) return;
+        document.getElementById('articleModalCat').textContent = a.cat;
+        document.getElementById('articleModalTitle').textContent = a.title;
+        document.getElementById('articleModalBody').innerHTML = a.body.map(function(p){ return '<p>' + p + '</p>'; }).join('');
+        articleModal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    function closeArticle(){ articleModal.classList.remove('open'); document.body.style.overflow=''; }
+    if(articleClose) articleClose.addEventListener('click', closeArticle);
+    articleModal.addEventListener('click', function(e){ if(e.target === articleModal) closeArticle(); });
+    document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeArticle(); });
+  }
+
+  // FAQ accordion (Layanan page)
+  document.querySelectorAll('.faq-q').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var item = btn.closest('.faq-item');
+      var answer = item.querySelector('.faq-a');
+      var isOpen = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(function(i){
+        i.classList.remove('open');
+        i.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if(!isOpen){
+        item.classList.add('open');
+        answer.style.maxHeight = answer.scrollHeight + 'px';
+      }
+    });
+  });
 })();
